@@ -1,5 +1,6 @@
 class Redactor2Rails::ImagesController < ApplicationController
   before_action :redactor2_authenticate_user!
+  before_action :verify_authenticity_token
 
   def create
     @image = Redactor2Rails.image_model.new
