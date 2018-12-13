@@ -3,19 +3,19 @@ class Redactor2Rails::FilesController < ApplicationController
   before_action :redactor2_authenticate_user!
 
   def create
-    @file = Redactor2Rails.file_model.new
-
-    file = params[:file]
-    @file.data = Redactor2Rails::Http.normalize_param(file, request)
-    if @file.has_attribute?(:"#{Redactor2Rails.devise_user_key}")
-      @file.send("#{Redactor2Rails.devise_user}=", redactor_current_user)
-      @file.assetable = redactor_current_user
-    end
-
-    if @file.save
-      render json: { url: @file.url, name: @file.filename }
+    if params[:file].is_a?(Array)
+      image_files = params[:file].map do |file|
+        { data: Redactor2Rails::Http.normalize_param(file, request) }
+      end
+      images = Redactor2Rails.image_model.create(image_files)
+      response = images.map do |image|
+        {"file-#{image.id}" => { id: image.id, url: image.url } }
+      end
+      render json: response
     else
-      render json: { error: @file.errors }
+      image = Redactor2Rails.image_model.new
+      image.data = Redactor2Rails::Http.normalize_param(file, request)
+      render json: { id: image.id, url: image.url }
     end
   end
 
