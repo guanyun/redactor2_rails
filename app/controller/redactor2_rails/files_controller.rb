@@ -1,6 +1,6 @@
 class Redactor2Rails::FilesController < ApplicationController
+  skip_before_action :verify_authenticity_token
   before_action :redactor2_authenticate_user!
-  before_action :verify_authenticity_token
 
   def create
     @file = Redactor2Rails.file_model.new
