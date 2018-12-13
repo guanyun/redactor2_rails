@@ -13,8 +13,7 @@ class Redactor2Rails::FilesController < ApplicationController
       end
       render json: response
     else
-      image = Redactor2Rails.image_model.new
-      image.data = Redactor2Rails::Http.normalize_param(file, request)
+      image = Redactor2Rails.image_model.create(data: Redactor2Rails::Http.normalize_param(params[:file], request))
       render json: { id: image.id, url: image.url }
     end
   end
